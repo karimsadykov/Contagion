@@ -9,137 +9,173 @@ import UIKit
 
 class SimulatorViewController: UIViewController {
     
-    var timer: Timer?
-    let selectedColor = UIColor.red
+    private var timer: Timer?
+    private var startTime: Date?
     
-    let numberOfRows = 10
-    let numberOfColumns = 10
-    lazy var matrixController = MatrixController(rows: numberOfRows, columns: numberOfColumns)
+    let viewModel: SimulatorViewModel
     
-    private let topView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .red
-        return view
-    }()
+    init(elements: Int, neighbors: Int, delay: Double) {
+        viewModel = SimulatorViewModel(elements: elements, neighbors: neighbors, delay: delay)
+        super.init(nibName: nil, bundle: nil)
+    }
     
-    private let collectionView: UICollectionView = {
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private let collectionView: SimulatorCollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        let collView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collView = SimulatorCollectionView(frame: .zero, collectionViewLayout: layout)
         collView.register(GroupCollectionViewCell.self, forCellWithReuseIdentifier: GroupCollectionViewCell.identifier)
         collView.showsHorizontalScrollIndicator = false
         collView.showsVerticalScrollIndicator = false
         return collView
     }()
     
+    private let healthyPeopleLabel: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .white
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private let timeLabel: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .white
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private let infectedPeopleLabel: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .white
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private var cellSize: CGFloat {
+        let padding: CGFloat = 3
+        let totalSpacing = CGFloat(viewModel.numberOfColumns - 1) * padding
+        return (collectionView.bounds.width - totalSpacing) / CGFloat(viewModel.numberOfColumns)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        view.addSubview(topView)
         view.addSubview(collectionView)
+        view.addSubview(healthyPeopleLabel)
+        view.addSubview(timeLabel)
+        view.addSubview(infectedPeopleLabel)
         collectionView.delegate = self
         collectionView.dataSource = self
+//        collectionView.cellSize = 50 // Установите начальный размер ячеек здесь
+        updateLabels()
+    }
+    
+    deinit {
+        timer?.invalidate()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        topView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 100)
-        collectionView.frame = CGRect(x: 0, y: 100, width: view.frame.width, height: 600)
+        healthyPeopleLabel.frame = CGRect(x: 0, y: view.layoutMargins.top, width: view.width/2-25, height: 30)
+        timeLabel.frame = CGRect(x: view.width/2-25, y: view.layoutMargins.top, width: 50, height: 30)
+        infectedPeopleLabel.frame = CGRect(x: view.frame.width/2 + 25, y: view.layoutMargins.top, width: view.width/2-25, height: 30)
+        collectionView.frame = CGRect(x: 0, y:timeLabel.bottom, width: view.frame.width, height: view.height-timeLabel.height-view.layoutMargins.top)
+        collectionView.cellSize = cellSize
+    }
+    
+    func showAlert() {
+        let alertController = UIAlertController(title: viewModel.alertTitle, message: viewModel.alertMessage(timeLabelText: timeLabel.text ?? ""), preferredStyle: .alert)
+        
+        let restartAction = UIAlertAction(title: viewModel.restartButtonTitle, style: .default) { [weak self] _ in
+            self?.restartSimulation()
+        }
+        
+        let returnAction = UIAlertAction(title: viewModel.returnButtonTitle, style: .default) { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        
+        alertController.addAction(restartAction)
+        alertController.addAction(returnAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func restartSimulation() {
+        viewModel.resetMatrix()
+        collectionView.reloadData()
+        updateLabels()
+    }
+    
+    private func updateTimerLabel() {
+        let elapsedTime = Int(Date().timeIntervalSince(startTime ??
+                                                       Date()))
+        let elapsedTimeString = String(format: "%02d:%02d", elapsedTime / 60, elapsedTime % 60)
+        timeLabel.text = "\(elapsedTimeString)"
+    }
+    func updateLabels() {
+        healthyPeopleLabel.text = "Здоровые: \(viewModel.numberOfZeroes)"
+        infectedPeopleLabel.text = "Зараженные: \(viewModel.numberOfOnes)"
     }
 }
 
 extension SimulatorViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return matrixController.matrix.count
-        }
+        return viewModel.matrixController.matrix.count
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return matrixController.matrix[section].count
-        }
+        return viewModel.matrixController.matrix[section].count
+    }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GroupCollectionViewCell.identifier, for: indexPath) as! GroupCollectionViewCell
-        cell.backgroundColor = .blue
-        cell.nameCategoryLabel.text = "\(matrixController.matrix[indexPath.section][indexPath.item])"
-                return cell
+        cell.select(value: viewModel.matrixController.matrix[indexPath.section][indexPath.item])
         return cell
     }
 }
 
 extension SimulatorViewController: UICollectionViewDelegate {
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let selectedCell = collectionView.cellForItem(at: IndexPath(row: viewModel.indexSelectedItem, section: 0)) as! CategoryCollectionViewCell
-//        selectedCell.viewModel.didSelectedCell()
-//
-//        viewModel.didSelectedItem(at: indexPath.row)
-//        let cell = collectionView.cellForItem(at: indexPath) as! CategoryCollectionViewCell
-//        cell.viewModel.didSelectedCell()
-//    }
-        
-    func shouldChangeColor(for indexPath: IndexPath, selectedIndexPath: IndexPath) -> Bool {
-           return indexPath.section == selectedIndexPath.section || indexPath.item == selectedIndexPath.item
-       }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // Отменяем предыдущий таймер, если он был запущен
-        timer?.invalidate()
-        timer = nil
-           
-        let neighbors = 3
-        matrixController.spreadOnes(startRow: indexPath.section, startColumn: indexPath.item, neighbors: neighbors, delay: 1.0) { [weak self] changedCoordinates in
+        
+        if timer == nil {
+            startTime = Date()
+            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+                self?.updateTimerLabel()
+            }
+        }
+        
+        viewModel.spreadOnes(startRow: indexPath.section, startColumn: indexPath.item, neighbors: viewModel.neighbors, delay: viewModel.delay, onChange: { [weak self] changedCoordinates in
             guard let self = self else { return }
             let changedIndexPaths = changedCoordinates.map { IndexPath(item: $0.col, section: $0.row) }
             DispatchQueue.main.async {
                 collectionView.reloadItems(at: changedIndexPaths)
+                self.updateLabels()
             }
-        }
-//        let changedCoordinates = matrixController.setOnes(selectedRow: indexPath.section, selectedCol: indexPath.item, count: neighbors)
-        
-//        let changedCoordinates = matrixController.spreadOnes(startRow: indexPath.section, startColumn: indexPath.item, neighbors: neighbors)
-//        let changedIndexPaths = changedCoordinates.map { IndexPath(item: $0.col, section: $0.row) }
-//        collectionView.reloadItems(at: changedIndexPaths)
-        
-        // Получить массив индексов всех секций коллекции
-//        let sections = Array(0..<collectionView.numberOfSections)
-//        // Получить массив индексов всех ячеек в секции, которую нажали
-//        let items = Array(0..<collectionView.numberOfItems(inSection: indexPath.section))
-//
-//        // Запускаем таймер, который будет изменять цвет ячеек с определенной задержкой
-//        var counter = 0
-//        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer) in
-//            guard let self = self else {
-//                timer.invalidate()
-//                return
-//            }
-//
-//            // Если все ячейки были изменены, останавливаем таймер
-//            if counter >= sections.count * items.count {
-//                timer.invalidate()
-//                return
-//            }
-//
-//            // Получить индекс ячейки, которую нужно изменить
-//            let sectionIndex = counter / items.count
-//            let itemIndex = counter % items.count
-//            let cellIndexPath = IndexPath(item: itemIndex, section: sectionIndex)
-//
-//            // Если ячейка соответствует правилу, изменить ее цвет
-//            if self.shouldChangeColor(for: cellIndexPath, selectedIndexPath: indexPath) {
-//                let cell = collectionView.cellForItem(at: cellIndexPath)
-//                cell?.backgroundColor = self.selectedColor
-//            }
-//
-//            counter += 1
-//        })
+        }, completion: { [weak self] in
+            DispatchQueue.main.async {
+                self?.timer?.invalidate()
+                self?.timer = nil
+                self?.startTime = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self?.showAlert()
+                }
+            }
+        })
     }
-
 }
 
 extension SimulatorViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 30, height: 30)
+        let cellSize = (collectionView as! SimulatorCollectionView).cellSize
+        return CGSize(width: cellSize, height: cellSize)
     }
-
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 3, left: 0, bottom: 3, right: 0)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 3
     }
@@ -148,4 +184,7 @@ extension SimulatorViewController: UICollectionViewDelegateFlowLayout {
         return 3
     }
 }
+
+
+
 

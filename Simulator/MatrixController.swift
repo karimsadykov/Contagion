@@ -14,20 +14,80 @@ struct Coordinate: Hashable, Equatable {
 
 class MatrixController {
     private(set) var matrix: [[Int]]
+    let numberOfRows: Int
+    let numberOfColumns: Int
+    private(set) var numberOfOnes: Int = 0
+    private(set) var numberOfZeroes: Int
+    private var elements: Int
     
-    init(rows: Int, columns: Int) {
-        self.matrix = Array(repeating: Array(repeating: 0, count: columns), count: rows)
+    init(elements: Int) {
+        let matrixSize = MatrixController.createMatrixWithZeroes(elements: elements)
+        self.matrix = matrixSize.matrix
+        self.numberOfRows = matrixSize.rows
+        self.numberOfColumns = matrixSize.columns
+        self.elements = elements
+        numberOfZeroes = elements
     }
     
-    func spreadOnes(startRow: Int, startColumn: Int, neighbors: Int, delay: TimeInterval, completion: @escaping (Set<Coordinate>) -> Void) {
-        var queue: Set<Coordinate> = [Coordinate(row: startRow, col: startColumn)]
-        spreadOnesRecursive(queue: queue, neighbors: neighbors, delay: delay, completion: completion)
+    static func createMatrixWithZeroes(elements: Int) -> (matrix: [[Int]], rows: Int, columns: Int) {
+        let maxColumns = 28
+        var numberOfRows = Int(ceil(sqrt(Double(elements))))
+        var numberOfColumns = numberOfRows
+        
+        if numberOfColumns > maxColumns {
+            numberOfColumns = maxColumns
+            numberOfRows = Int(ceil(Double(elements) / Double(numberOfColumns)))
+        }
+        
+        var matrix = [[Int]]()
+        var elementsPlaced = 0
+        
+        for _ in 0..<numberOfRows {
+            var row = [Int]()
+            for _ in 0..<numberOfColumns {
+                if elementsPlaced < elements {
+                    row.append(0)
+                    elementsPlaced += 1
+                } else {
+                    row.append(-1) // Заполняем ячейки вне заданного количества элементов значением -1
+                }
+            }
+            matrix.append(row)
+        }
+        return (matrix, numberOfRows, numberOfColumns)
     }
-
-    private func spreadOnesRecursive(queue: Set<Coordinate>, neighbors: Int, delay: TimeInterval, completion: @escaping (Set<Coordinate>) -> Void) {
-        var allOnes = matrix.flatMap { $0 }.allSatisfy { $0 == 1 }
+    
+    func resetMatrix() {
+        let newMatrixSize = MatrixController.createMatrixWithZeroes(elements: elements)
+        self.matrix = newMatrixSize.matrix
+        numberOfOnes = 0
+        numberOfZeroes = elements
+    }
+    
+    func spreadOnes(startRow: Int, startColumn: Int, neighbors: Int, delay: TimeInterval, onChange: @escaping (Set<Coordinate>) -> Void, completion: @escaping () -> Void) {
+        let queue: Set<Coordinate> = [Coordinate(row: startRow, col: startColumn)]
+        spreadOnesRecursive(queue: queue, neighbors: neighbors, delay: delay, onChange: onChange, completion: completion)
+    }
+    
+    private func isCoordinateValidAndNotInfected(_ row: Int, _ col: Int) -> Bool {
+        return row >= 0 && row < self.matrix.count && col >= 0 && col < self.matrix[0].count && self.matrix[row][col] != 1 && self.matrix[row][col] != -1
+    }
+    
+    private func spreadOnesRecursive(queue: Set<Coordinate>, neighbors: Int, delay: TimeInterval, onChange: @escaping (Set<Coordinate>) -> Void, completion: @escaping () -> Void) {
+        var onesCount = 0
+        
+        for row in self.matrix {
+            for cell in row {
+                if cell == 0 {
+                    onesCount += 1
+                }
+            }
+        }
+        
+        let allOnes = onesCount == 0
         
         if allOnes {
+            completion()
             return
         }
         
@@ -38,52 +98,20 @@ class MatrixController {
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            completion(newQueue)
-            self.spreadOnesRecursive(queue: newQueue, neighbors: neighbors, delay: delay, completion: completion)
+            self.numberOfOnes = self.matrix.flatMap { $0 }.filter { $0 == 1 }.count
+            self.numberOfZeroes = self.matrix.flatMap { $0 }.filter { $0 == 0 }.count
+            onChange(newQueue)
+            self.spreadOnesRecursive(queue: newQueue, neighbors: neighbors, delay: delay, onChange: onChange, completion: completion)
         }
     }
-
-    
-//    func spreadOnes(startRow: Int, startColumn: Int, neighbors: Int, completion: @escaping (Set<Coordinate>) -> Void) {
-//        var allOnes = false
-//        var queue: Set<Coordinate> = [Coordinate(row: startRow, col: startColumn)]
-//
-//        while !allOnes {
-//            var newQueue: Set<Coordinate> = []
-//            queue.forEach { coordinate in
-//                let newOnes = setOnes(selectedRow: coordinate.row, selectedCol: coordinate.col, count: neighbors)
-//                newQueue.formUnion(newOnes)
-//            }
-//            queue = newQueue
-//            allOnes = matrix.flatMap { $0 }.allSatisfy { $0 == 1 }
-//
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                completion(newQueue)
-//            }
-//        }
-//    }
-    
-//    func spreadOnes(matrix: inout [[Int]], startRow: Int, startColumn: Int, neighbors: Int, completion: @escaping (Set<Coordinate>) -> Void) {
-//        var allOnes = false
-//        var queue: Set<Coordinate> = [Coordinate(row: startRow, col: startColumn)]
-//
-//        while !allOnes {
-//            var newQueue: Set<Coordinate> = []
-//            queue.forEach { coordinate in
-//                let newOnes = setOnes(selectedRow: coordinate.row, selectedCol: coordinate.col, count: neighbors)
-//                newQueue.formUnion(newOnes)
-//            }
-//            queue = newQueue
-//            printMatrix()
-//            completion(newQueue)
-//            allOnes = self.matrix.flatMap { $0 }.allSatisfy { $0 == 1 }
-//        }
-//        print(allOnes)
-//    }
     
     func setOnes(selectedRow: Int, selectedCol: Int, count: Int) -> Set<Coordinate> {
         let row = selectedRow
         let col = selectedCol
+        
+        if self.matrix[row][col] == -1 {
+            return Set<Coordinate>()
+        }
         
         let directions = [
             (0, 1), (1, 0), (0, -1), (-1, 0),
@@ -98,27 +126,28 @@ class MatrixController {
         for direction in directions {
             let newRow = row + direction.0
             let newCol = col + direction.1
-            if newRow >= 0 && newRow < self.matrix.count && newCol >= 0 && newCol < self.matrix[0].count && self.matrix[newRow][newCol] != 1 {
+            if newRow >= 0 && newRow < self.matrix.count && newCol >= 0 && newCol < self.matrix[0].count && self.matrix[newRow][newCol] != 1 && self.matrix[newRow][newCol] != -1 {
                 allSurroundingOnes = false
                 break
             }
         }
         
-        // Если все элементы вокруг равны 1, прекращаем работу функции
+        // Если все элементы вокруг равны 1 или -1, прекращаем работу функции
         if allSurroundingOnes {
             return changedCoordinates
         }
         
+        
         var selectedDirections = [Int]()
         var maxAttempts = 0
         
-        while selectedDirections.count < count && selectedDirections.count < directions.count && maxAttempts < directions.count * 3 {
+        while selectedDirections.count < count && selectedDirections.count < directions.count && maxAttempts < directions.count * 2 {
             let index = Int.random(in: 0..<directions.count)
             if !selectedDirections.contains(index) {
                 let direction = directions[index]
                 let newRow = row + direction.0
                 let newCol = col + direction.1
-                if newRow >= 0 && newRow < self.matrix.count && newCol >= 0 && newCol < self.matrix[0].count && self.matrix[newRow][newCol] != 1 {
+                if isCoordinateValidAndNotInfected(newRow, newCol) {
                     selectedDirections.append(index)
                 }
             }
@@ -129,20 +158,12 @@ class MatrixController {
             let direction = directions[index]
             let newRow = row + direction.0
             let newCol = col + direction.1
-            
-            if newRow >= 0 && newRow < self.matrix.count && newCol >= 0 && newCol < self.matrix[0].count {
+            if isCoordinateValidAndNotInfected(newRow, newCol) {
                 self.matrix[newRow][newCol] = 1
                 changedCoordinates.insert(Coordinate(row: newRow, col: newCol))
             }
         }
         
         return changedCoordinates
-    }
-    
-    func printMatrix() {
-        for row in self.matrix {
-            print(row.map { String($0) }.joined(separator: " "))
-        }
-        print("\n")
     }
 }
