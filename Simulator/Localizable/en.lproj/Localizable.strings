@@ -1,0 +1,19 @@
+"groupLabel" = "Number of people";
+"groupCountTextField" = "100";
+"infectLabel" = "Infectious";
+"infectCountLabel" = "3";
+"periodLabel" = "Infection rate";
+"periodCountTextField" = "1";
+"startButton" = "Start";
+"simulator_title" = "Simulator";
+"element_invalid" = "Please enter a valid number of elements";
+"delay_invalid" = "Enter a valid infection value";
+"alert_error" = "Error";
+"alert_ok" = "OK";
+"healthy" = "Healthy: ";
+"infected" = "Infected: ";
+"alertS_title" = "Everyone is infected!";
+"alertS_restart" = "Restart";
+"alertS_return" = "Return to Home";
+"alertS_message" = "Everyone got infected for ";
+

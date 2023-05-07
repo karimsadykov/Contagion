@@ -116,8 +116,8 @@ class SimulatorViewController: UIViewController {
         timeLabel.text = "\(elapsedTimeString)"
     }
     func updateLabels() {
-        healthyPeopleLabel.text = "Здоровые: \(viewModel.numberOfZeroes)"
-        infectedPeopleLabel.text = "Зараженные: \(viewModel.numberOfOnes)"
+        healthyPeopleLabel.text = "\(LocalizableStrings.healthy)\(viewModel.numberOfZeroes)"
+        infectedPeopleLabel.text = "\(LocalizableStrings.infected)\(viewModel.numberOfOnes)"
     }
 }
 

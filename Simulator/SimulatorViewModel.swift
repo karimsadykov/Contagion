@@ -19,11 +19,11 @@ class SimulatorViewModel {
         matrixController = MatrixController(elements: elements)
     }
     
-    var alertTitle: String { return "Все заражены!" }
-    var restartButtonTitle: String { return "Начать заново" }
-    var returnButtonTitle: String { return "Вернуться на главную" }
+    var alertTitle: String { return LocalizableStrings.alertSTitle}
+    var restartButtonTitle: String { return LocalizableStrings.alertSRestart }
+    var returnButtonTitle: String { return LocalizableStrings.alertSReturn }
     func alertMessage(timeLabelText: String) -> String {
-        return "Все заразились за \(timeLabelText)"
+        return "\(LocalizableStrings.alertSMessage)\(timeLabelText)"
     }
 
     func spreadOnes(startRow: Int, startColumn: Int, neighbors: Int, delay: TimeInterval, onChange: @escaping (Set<Coordinate>) -> Void, completion: @escaping () -> Void) {

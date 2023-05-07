@@ -1,0 +1,20 @@
+"groupLabel" = "Количество людей";
+"groupCountTextField" = "100";
+"infectLabel" = "Заразность";
+"infectCountLabel" = "3";
+"periodLabel" = "Скорость заражения";
+"periodCountTextField" = "1";
+"startButton" = "Запустить";
+"simulator_title" = "Simulator";
+"element_invalid" = "Введите корректное количество элементов";
+"delay_invalid" = "Введите корректное значение заражения";
+"alert_error" = "Ошибка";
+"alert_ok" = "OK";
+"healthy" = "Здоровые: ";
+"infected" = "Зараженные: ";
+"alertS_title" = "Все заражены!";
+"alertS_restart" = "Начать заново";
+"alertS_return" = "Вернуться на главную";
+"alertS_message" = "Все заразились за ";
+
+

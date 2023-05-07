@@ -14,21 +14,21 @@ class MainViewModel {
         guard let elementsText = elements, !elementsText.isEmpty,
               let elements = Int(elementsText),
               elements > 0 else {
-            return (false, "Введите корректное количество элементов")
+            return (false, LocalizableStrings.elementInvalid)
         }
         
         guard let delayText = delay, !delayText.isEmpty,
               let delay = Double(delayText),
               delay > 0 else {
-            return (false, "Введите корректное значение заражения")
+            return (false, LocalizableStrings.delayInvalid)
         }
         
         return (true, nil)
     }
     
     func showAlert(on viewController: UIViewController, message: String) {
-        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        let alert = UIAlertController(title: LocalizableStrings.alertError, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: LocalizableStrings.alertOk, style: .default, handler: nil))
         viewController.present(alert, animated: true, completion: nil)
     }
 }

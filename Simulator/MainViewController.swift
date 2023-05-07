@@ -13,7 +13,7 @@ class MainViewController: UIViewController {
     
     private let groupLabel: UILabel = {
         let label = UILabel()
-        label.text = "Количество людей"
+        label.text = LocalizableStrings.groupLabel
         label.textAlignment = .center
         return label
     }()
@@ -27,14 +27,14 @@ class MainViewController: UIViewController {
         textField.keyboardType = .numberPad
         textField.clipsToBounds = true
         textField.textAlignment = .center
-        textField.text = "100"
+        textField.text = LocalizableStrings.groupCountTextField
         textField.font = UIFont.systemFont(ofSize: UIScreen.main.bounds.width * 0.05)
         return textField
     }()
     
     private let infectLabel: UILabel = {
         let label = UILabel()
-        label.text = "Заразность"
+        label.text = LocalizableStrings.infectLabel
         label.textAlignment = .center
         return label
     }()
@@ -50,7 +50,7 @@ class MainViewController: UIViewController {
     
     private let infectCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "3"
+        label.text = LocalizableStrings.infectCountLabel
         label.layer.borderWidth = 1
         label.clipsToBounds = true
         label.layer.cornerRadius = 5
@@ -61,7 +61,7 @@ class MainViewController: UIViewController {
     
     private let periodLabel: UILabel = {
         let label = UILabel()
-        label.text = "Скорость заражения"
+        label.text = LocalizableStrings.periodLabel
         label.textAlignment = .center
         return label
     }()
@@ -75,7 +75,7 @@ class MainViewController: UIViewController {
         textField.keyboardType = .decimalPad
         textField.clipsToBounds = true
         textField.textAlignment = .center
-        textField.text = "1"
+        textField.text = LocalizableStrings.periodCountTextField
         textField.font = UIFont.systemFont(ofSize: UIScreen.main.bounds.width * 0.05)
         return textField
     }()
@@ -83,7 +83,7 @@ class MainViewController: UIViewController {
     private let startButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = #colorLiteral(red: 0, green: 0.8421530128, blue: 0, alpha: 1)
-        button.setTitle("Start", for: .normal)
+        button.setTitle(LocalizableStrings.startButton, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.clipsToBounds = true
         return button
@@ -126,7 +126,7 @@ class MainViewController: UIViewController {
         let delay = Double(periodCountTextField.text!)!
         
         let simulatorVC = SimulatorViewController(elements: elements, neighbors: neighbors, delay: delay)
-        simulatorVC.title = "Simulator"
+        simulatorVC.title = LocalizableStrings.simulatorTitle
         navigationController?.pushViewController(simulatorVC, animated: true)
     }
     
