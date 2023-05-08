@@ -1,8 +1,8 @@
-"groupLabel" = "Размер входной группы";
+"groupLabel" = "Количество людей";
 "groupCountTextField" = "100";
 "infectLabel" = "Максимальный фактор заражения";
 "infectCountLabel" = "3";
-"periodLabel" = "Период пересчета ввода";
+"periodLabel" = "Период пересчёта зараженных";
 "periodCountTextField" = "1";
 "startButton" = "Запустить";
 "simulator_title" = "Cимулятор";

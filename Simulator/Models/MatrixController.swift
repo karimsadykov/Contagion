@@ -108,7 +108,6 @@ class MatrixController {
         
         if allOnes {
             completion()
-            printMatrix(matrix: self.matrix)
             return
         }
         

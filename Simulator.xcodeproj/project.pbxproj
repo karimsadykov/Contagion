@@ -94,6 +94,49 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D79AE752A0907C600A47BBB /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5D84E9D22A03FA07007F8041 /* MainViewController.swift */,
+				5D84E9FE2A040E2E007F8041 /* SimulatorViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5D79AE762A0907D300A47BBB /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5D75D94E2A063B75000F48E8 /* MatrixController.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5D79AE772A0907DF00A47BBB /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5D6E386E2A069A58006C0D73 /* MainViewModel.swift */,
+				5D6E386C2A069511006C0D73 /* SimulatorViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5D79AE782A0907ED00A47BBB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5D9FC9042A07CA1500F7630C /* SimulatorCollectionView.swift */,
+				5D84EA002A041054007F8041 /* GroupCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5D79AE792A0907F500A47BBB /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5D6E386A2A068B02006C0D73 /* UIView + Extension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		5D84E9C22A03FA07007F8041 = {
 			isa = PBXGroup;
 			children = (
@@ -117,17 +160,14 @@
 		5D84E9CD2A03FA07007F8041 /* Simulator */ = {
 			isa = PBXGroup;
 			children = (
+				5D79AE762A0907D300A47BBB /* Models */,
+				5D79AE752A0907C600A47BBB /* ViewControllers */,
+				5D79AE772A0907DF00A47BBB /* ViewModels */,
+				5D79AE782A0907ED00A47BBB /* Views */,
+				5D79AE792A0907F500A47BBB /* Extensions */,
+				5D9FC90A2A07CFAE00F7630C /* Resources */,
 				5D84E9CE2A03FA07007F8041 /* AppDelegate.swift */,
 				5D84E9D02A03FA07007F8041 /* SceneDelegate.swift */,
-				5D84E9D22A03FA07007F8041 /* MainViewController.swift */,
-				5D6E386E2A069A58006C0D73 /* MainViewModel.swift */,
-				5D84E9FE2A040E2E007F8041 /* SimulatorViewController.swift */,
-				5D6E386C2A069511006C0D73 /* SimulatorViewModel.swift */,
-				5D9FC9042A07CA1500F7630C /* SimulatorCollectionView.swift */,
-				5D75D94E2A063B75000F48E8 /* MatrixController.swift */,
-				5D84EA002A041054007F8041 /* GroupCollectionViewCell.swift */,
-				5D6E386A2A068B02006C0D73 /* UIView + Extension.swift */,
-				5D9FC90A2A07CFAE00F7630C /* Localizable */,
 				5D84E9D72A03FA0C007F8041 /* Assets.xcassets */,
 				5D84E9D92A03FA0C007F8041 /* LaunchScreen.storyboard */,
 				5D84E9DC2A03FA0C007F8041 /* Info.plist */,
@@ -152,13 +192,13 @@
 			path = SimulatorUITests;
 			sourceTree = "<group>";
 		};
-		5D9FC90A2A07CFAE00F7630C /* Localizable */ = {
+		5D9FC90A2A07CFAE00F7630C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				5D9FC9082A07CFA800F7630C /* Localization.swift */,
 				5D9FC9172A07D19200F7630C /* Localizable.strings */,
 			);
-			path = Localizable;
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

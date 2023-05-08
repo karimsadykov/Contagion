@@ -25,11 +25,10 @@ class MainViewModel {
         guard let delay = Double(delayTextWithDot), delay > 0 else {
             return (false, LocalizableStrings.delayInvalid)
         }
-        print(delay)
         return (true, nil)
     }
     
-    func showAlert(on viewController: UIViewController, message: String) {
+    func presentAlert(on viewController: UIViewController, withMessage message: String) {
         let alert = UIAlertController(title: LocalizableStrings.alertError, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: LocalizableStrings.alertOk, style: .default, handler: nil))
         viewController.present(alert, animated: true, completion: nil)

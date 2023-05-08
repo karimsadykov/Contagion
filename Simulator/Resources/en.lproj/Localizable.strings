@@ -1,6 +1,6 @@
 "groupLabel" = "Input Group Size";
 "groupCountTextField" = "100";
-"infectLabel" = "Maximum Infection Factor";
+"infectLabel" = "Infection Factor";
 "infectCountLabel" = "3";
 "periodLabel" = "Input Recalculation Period";
 "periodCountTextField" = "1";
