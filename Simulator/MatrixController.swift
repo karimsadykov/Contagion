@@ -73,26 +73,48 @@ class MatrixController {
         return row >= 0 && row < self.matrix.count && col >= 0 && col < self.matrix[0].count && self.matrix[row][col] != 1 && self.matrix[row][col] != -1
     }
     
-    private func spreadOnesRecursive(queue: Set<Coordinate>, neighbors: Int, delay: TimeInterval, onChange: @escaping (Set<Coordinate>) -> Void, completion: @escaping () -> Void) {
-        var onesCount = 0
-        
-        for row in self.matrix {
-            for cell in row {
-                if cell == 0 {
-                    onesCount += 1
-                }
-            }
+    func printMatrix(matrix: [[Int]]) {
+        for row in matrix {
+            print(row)
+        }
+        print("\n")
+    }
+    
+    private func isValidCoordinate(_ coordinate: Coordinate) -> Bool {
+        let newRow = coordinate.row
+        let newCol = coordinate.col
+        if self.matrix[newRow][newCol] == 0 {
+            return true
         }
         
-        let allOnes = onesCount == 0
+        let directions = [
+            (0, 0),
+            (0, 1), (1, 0), (0, -1), (-1, 0),
+            (1, 1), (-1, -1), (1, -1), (-1, 1)
+        ]
+        
+        return !directions.allSatisfy { direction in
+            let surroundingRow = newRow + direction.0
+            let surroundingCol = newCol + direction.1
+            return surroundingRow >= 0 && surroundingRow < self.matrix.count &&
+                surroundingCol >= 0 && surroundingCol < self.matrix[0].count &&
+                (self.matrix[surroundingRow][surroundingCol] == 1 || self.matrix[surroundingRow][surroundingCol] == -1)
+        }
+    }
+    
+    private func spreadOnesRecursive(queue: Set<Coordinate>, neighbors: Int, delay: TimeInterval, onChange: @escaping (Set<Coordinate>) -> Void, completion: @escaping () -> Void) {
+        
+        let allOnes = !self.matrix.flatMap { $0 }.contains(0)
         
         if allOnes {
             completion()
+            printMatrix(matrix: self.matrix)
             return
         }
         
         var newQueue: Set<Coordinate> = []
-        queue.forEach { coordinate in
+        // возвращает ячейки которые были изменены на 1
+        queue.filter { isValidCoordinate($0) }.forEach { coordinate in
             let newOnes = setOnes(selectedRow: coordinate.row, selectedCol: coordinate.col, count: neighbors)
             newQueue.formUnion(newOnes)
         }
@@ -104,8 +126,9 @@ class MatrixController {
             self.spreadOnesRecursive(queue: newQueue, neighbors: neighbors, delay: delay, onChange: onChange, completion: completion)
         }
     }
+
     
-    func setOnes(selectedRow: Int, selectedCol: Int, count: Int) -> Set<Coordinate> {
+    private func setOnes(selectedRow: Int, selectedCol: Int, count: Int) -> Set<Coordinate> {
         let row = selectedRow
         let col = selectedCol
         

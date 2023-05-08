@@ -1,8 +1,8 @@
-"groupLabel" = "Number of people";
+"groupLabel" = "Input Group Size";
 "groupCountTextField" = "100";
-"infectLabel" = "Infectious";
+"infectLabel" = "Maximum Infection Factor";
 "infectCountLabel" = "3";
-"periodLabel" = "Infection rate";
+"periodLabel" = "Input Recalculation Period";
 "periodCountTextField" = "1";
 "startButton" = "Start";
 "simulator_title" = "Simulator";
@@ -16,4 +16,5 @@
 "alertS_restart" = "Restart";
 "alertS_return" = "Return to Home";
 "alertS_message" = "Everyone got infected for ";
+"title_main" = "Settings";
 

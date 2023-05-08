@@ -1,11 +1,11 @@
-"groupLabel" = "Количество людей";
+"groupLabel" = "Размер входной группы";
 "groupCountTextField" = "100";
-"infectLabel" = "Заразность";
+"infectLabel" = "Максимальный фактор заражения";
 "infectCountLabel" = "3";
-"periodLabel" = "Скорость заражения";
+"periodLabel" = "Период пересчета ввода";
 "periodCountTextField" = "1";
 "startButton" = "Запустить";
-"simulator_title" = "Simulator";
+"simulator_title" = "Cимулятор";
 "element_invalid" = "Введите корректное количество элементов";
 "delay_invalid" = "Введите корректное значение заражения";
 "alert_error" = "Ошибка";
@@ -16,5 +16,5 @@
 "alertS_restart" = "Начать заново";
 "alertS_return" = "Вернуться на главную";
 "alertS_message" = "Все заразились за ";
-
+"title_main" = "Настройки";
 

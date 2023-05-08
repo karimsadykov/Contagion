@@ -26,5 +26,6 @@ class LocalizableStrings {
     static let alertSRestart = NSLocalizedString("alertS_restart", comment: "")
     static let alertSReturn = NSLocalizedString("alertS_return", comment: "")
     static let alertSMessage = NSLocalizedString("alertS_message", comment: "")
+    static let titleMain = NSLocalizedString("title_main", comment: "")
 }
 

@@ -15,20 +15,23 @@ class MainViewController: UIViewController {
         let label = UILabel()
         label.text = LocalizableStrings.groupLabel
         label.textAlignment = .center
+        label.font = .systemFont(ofSize: 17, weight: .bold)
         return label
     }()
 
     private let groupCountTextField: UITextField = {
         let textField = UITextField()
-//        textField.borderStyle = .bezel
+
         textField.layer.borderColor = UIColor.gray.cgColor
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 5
+        textField.font = .systemFont(ofSize: 17, weight: .regular)
         textField.keyboardType = .numberPad
         textField.clipsToBounds = true
         textField.textAlignment = .center
+        textField.backgroundColor = .white
         textField.text = LocalizableStrings.groupCountTextField
-        textField.font = UIFont.systemFont(ofSize: UIScreen.main.bounds.width * 0.05)
+//        textField.font = UIFont.systemFont(ofSize: UIScreen.main.bounds.width * 0.05)
         return textField
     }()
     
@@ -36,6 +39,7 @@ class MainViewController: UIViewController {
         let label = UILabel()
         label.text = LocalizableStrings.infectLabel
         label.textAlignment = .center
+        label.font = .systemFont(ofSize: 17, weight: .bold)
         return label
     }()
     
@@ -54,6 +58,8 @@ class MainViewController: UIViewController {
         label.layer.borderWidth = 1
         label.clipsToBounds = true
         label.layer.cornerRadius = 5
+        label.backgroundColor = .white
+        label.font = .systemFont(ofSize: 17, weight: .bold)
         label.layer.borderColor = UIColor.gray.cgColor
         label.textAlignment = .center
         return label
@@ -63,6 +69,7 @@ class MainViewController: UIViewController {
         let label = UILabel()
         label.text = LocalizableStrings.periodLabel
         label.textAlignment = .center
+        label.font = .systemFont(ofSize: 17, weight: .bold)
         return label
     }()
     
@@ -74,6 +81,7 @@ class MainViewController: UIViewController {
         textField.layer.cornerRadius = 5
         textField.keyboardType = .decimalPad
         textField.clipsToBounds = true
+        textField.backgroundColor = .white
         textField.textAlignment = .center
         textField.text = LocalizableStrings.periodCountTextField
         textField.font = UIFont.systemFont(ofSize: UIScreen.main.bounds.width * 0.05)
@@ -82,7 +90,7 @@ class MainViewController: UIViewController {
     
     private let startButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = #colorLiteral(red: 0, green: 0.8421530128, blue: 0, alpha: 1)
+        button.backgroundColor = .systemBlue
         button.setTitle(LocalizableStrings.startButton, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.clipsToBounds = true
@@ -91,7 +99,7 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .secondarySystemBackground
         view.addSubview(groupLabel)
         view.addSubview(groupCountTextField)
         view.addSubview(infectLabel)
@@ -104,11 +112,18 @@ class MainViewController: UIViewController {
         infectCountStepper.addTarget(self, action: #selector(stepperValueChanged), for: .valueChanged)
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
-        
-        
         let toolbar = createToolbar()
         groupCountTextField.inputAccessoryView = toolbar
         periodCountTextField.inputAccessoryView = toolbar
+        setupNavigationBar()
+    }
+    
+    private func setupNavigationBar() {
+        let navBarAppearance = UINavigationBarAppearance()
+        title = LocalizableStrings.titleMain
+        navigationItem.largeTitleDisplayMode = .never
+        navigationController?.navigationBar.standardAppearance = navBarAppearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
     }
     
     @objc func startSimulator() {
@@ -123,7 +138,9 @@ class MainViewController: UIViewController {
         
         let elements = Int(groupCountTextField.text!)!
         let neighbors = Int(infectCountStepper.value)
-        let delay = Double(periodCountTextField.text!)!
+        let delayTextWithDot = periodCountTextField.text!.replacingOccurrences(of: ",", with: ".")
+        let delay = Double(delayTextWithDot)!
+
         
         let simulatorVC = SimulatorViewController(elements: elements, neighbors: neighbors, delay: delay)
         simulatorVC.title = LocalizableStrings.simulatorTitle
@@ -151,14 +168,14 @@ class MainViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        groupLabel.frame = CGRect(x: view.width/4, y: view.layoutMargins.top, width: view.width/2, height: 30)
-        groupCountTextField.frame = CGRect(x: view.width/4, y: groupLabel.bottom + 10, width: view.width/2, height: 30)
-        periodLabel.frame = CGRect(x: view.width/4, y: groupCountTextField.bottom + 10, width: view.width/2, height: 30)
-        periodCountTextField.frame = CGRect(x: view.width/4, y: periodLabel.bottom + 10, width: view.width/2, height: 30)
-        infectLabel.frame = CGRect(x: view.width/4, y: periodCountTextField.bottom + 10, width: view.width/2, height: 30)
-        infectCountLabel.frame = CGRect(x: view.width/2 - 25, y: infectLabel.bottom + 10, width: 50, height: 30)
+        groupLabel.frame = CGRect(x: 20, y: view.layoutMargins.top, width: view.width-40, height: 30)
+        groupCountTextField.frame = CGRect(x: 20, y: groupLabel.bottom + 10, width: view.width-40, height: 40)
+        periodLabel.frame = CGRect(x: 20, y: groupCountTextField.bottom + 10, width: view.width-40, height: 30)
+        periodCountTextField.frame = CGRect(x: 20, y: periodLabel.bottom + 10, width: view.width-40, height: 40)
+        infectLabel.frame = CGRect(x: 20, y: periodCountTextField.bottom + 10, width: view.width-40, height: 30)
+        infectCountLabel.frame = CGRect(x: view.width/2 - 25, y: infectLabel.bottom + 10, width: 50, height: 40)
         infectCountStepper.frame = CGRect(x: view.width/2 - 50, y: infectCountLabel.bottom + 10, width: 100, height: 40)
-        startButton.frame = CGRect(x: (view.width-200)/2, y: view.height - 150, width: 200, height: 50)
+        startButton.frame = CGRect(x: (view.width-250)/2, y: infectCountStepper.bottom + 50, width: 250, height: 50)
         startButton.layer.cornerRadius = startButton.height/4
     }
 }

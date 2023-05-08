@@ -17,12 +17,15 @@ class MainViewModel {
             return (false, LocalizableStrings.elementInvalid)
         }
         
-        guard let delayText = delay, !delayText.isEmpty,
-              let delay = Double(delayText),
-              delay > 0 else {
+        guard let delayText = delay, !delayText.isEmpty else {
             return (false, LocalizableStrings.delayInvalid)
         }
         
+        let delayTextWithDot = delayText.replacingOccurrences(of: ",", with: ".")
+        guard let delay = Double(delayTextWithDot), delay > 0 else {
+            return (false, LocalizableStrings.delayInvalid)
+        }
+        print(delay)
         return (true, nil)
     }
     
