@@ -69,7 +69,7 @@ class MainViewController: UIViewController {
         textField.clipsToBounds = true
         textField.textAlignment = .center
         textField.backgroundColor = .white
-        textField.text = text
+        textField.placeholder = text
         return textField
     }
     
